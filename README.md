@@ -5,7 +5,7 @@ For more information please visit https://natrixlabs.ru
 
 # How to build
 
-## Requesites
+## Prerequisites
 To build Natrix you need 
 1. Microsoft Visual Studio 2019
 2. Qt 5.15.2 installed
