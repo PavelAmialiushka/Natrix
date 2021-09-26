@@ -1,0 +1,35 @@
+syntax: glob
+
+*.tmp
+*.txtx
+*.log
+*.error
+*.user
+*.user*
+*.zip
+*.exe
+*.rar
+*.gz
+*.7z
+*.orig
+object_script*.*
+
+Thumbs.db
+src/ui/ui_mainwindow.h
+
+.git
+.hg
+build*/
+bin/
+bin.vs/
+bin.unittest/
+bin.vs.unittest/
+doc/
+site/
+img_sources/
+# Default ignored files
+.idea/workspace.xml
+.idea/*
+CMakeFiles/*
+CMakeCache.txt
+__pycache__/*

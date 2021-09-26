@@ -1,0 +1,23 @@
+---
+BasedOnStyle: Microsoft
+AccessModifierOffset: '-4'
+AllowShortIfStatementsOnASingleLine: Never
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: 'Yes'
+BreakConstructorInitializers: BeforeComma
+ColumnLimit: '100'
+Language: Cpp
+UseTab: Never
+
+BinPackArguments: false
+BinPackParameters: false
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+
+ExperimentalAutoDetectBinPacking: false
+AllowAllParametersOfDeclarationOnNextLine: false
+SpaceBeforeParens: Never
+
+#https://zed0.co.uk/clang-format-configurator/
+...

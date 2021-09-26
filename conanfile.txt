@@ -1,0 +1,11 @@
+[requires]
+eigen/3.3.7
+cryptopp/8.5.0
+gtest/1.10.0
+
+[generators]
+cmake
+
+[options]
+cryptopp:shared=False
+

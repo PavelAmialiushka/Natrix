@@ -1,0 +1,1 @@
+D:\Distrib\Graphics\pngcrush\pngcrush_1_8.0_w32.exe -ow -rem allb -reduce !.!

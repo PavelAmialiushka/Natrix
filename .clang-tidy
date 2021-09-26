@@ -1,0 +1,13 @@
+# clang-tidy checks
+
+Checks: '-*,
+    bugprone-*,
+    #cppcoreguidelines-*,
+    #clang-analyzer-*,
+    #readability-*,
+    #performance-*,
+    #misc-*,
+    ###################
+    '
+
+#WarningsAsErrors:  '*'

@@ -1,0 +1,146 @@
+ManipulatorTool
+действия. пользователь кликает мышкой
+    ManipulatorTool::drag +
+    ManipulatorTool::move -> адорнеры и прочая фигня, но не commit
+
+    ManipulatorTool::rollback           -> отмена всех действий инструмента, запуск инструмента не подразумевается
+                                           во время setTool и moveOut
+    ManipulatorTool::rollbackAndPrepare -> отмена действий + подготовка к запуску
+                                           перед каждым move, click и проч
+    ManipulatorTool::click -> инструмент может измениться
+    ManipulatorTool::commit ->
+        сохраняет список комманд и меняет инструмент, если необходимо
+
+    если во время commit инструмент меняется
+    ManipulatorTool(1)::tearDown();
+    ManipulatorTool(2)::setUp();
+
+текстовое окошко
+    SceneWidget владеет экземпляром TextEditor (наследник QTextEdit)
+    (Manipulator)TextEdit (реализует ITextInfo)
+        ::do_setUp
+        ::do_tearDown
+            показывает и прячет окно TextEditor через
+            Scene::setTextEdit -> SceneWidget::setTextEdit(ITextInfo*)
+    SceneWidget реализует работу с текстом через указатель на интерфейс ITextInfo
+
+
+
+
+    sceneWidget показывает окно и пересылает информацию о изменении его содержимого
+
+курсор
+    экземпляр вызывает ManipulatorTool::setCursor(QString)
+    после вызова методов мышки click, drag и т.п. вызывается Scene::setCursor(QString)
+    который испускает сигнал updateCursor(QString)
+    который принимается sceneWidget::setCursor(QString), который и обновляет курсор
+
+клавиши-модификаторы
+    из sceneWidget до вызова click, move, drag и проч
+    вызывается Manipulator::setModifiers(...) с указанием зажатых клавиш
+
+мышка
+    sceneWidget вызывает следующие функции
+        Manipulator::move - перемещение
+        Manipulator::click - нажатие
+        Manipulator::dragStart, drag, drop - драггинг
+    внутри Manipulator эти вызовы превращаются в зависимости от
+    ManipulatorTool::supportDragging() true
+        Manipulator::dragStart -> ManipulatorTool::drag
+        Manipulator::drag      -> ManipulatorTool::drag
+        Manipulator::drop      -> ManipulatorTool::drop
+    ManipulatorTool::supportDragging() false
+        Manipulator::dragStart -> ManipulatorTool::click
+        Manipulator::drag      -> ManipulatorTool::move
+        Manipulator::drop      -> ManipulatorTool::click + cancel
+
+нажатия клавиш
+    sceneWidget перехватывает и обрабатывает по свойму некоторые клавишы
+        Escape  -> Manipulator::cancel
+        TAB     -> Manipulator::togglePlane
+    остальные кнопки игнорируется
+--------------------------------------------------------
+DO UNDO
+
+Command
+    содержит списки выполнения и отмены выполнения
+    Command`а выполняется и отменяется целиком, хотя может
+    содержать множество действий
+    > name имеет имя
+
+UndoList
+    содержит набор действий которые отменяются по одному
+
+--------------------------------------------------------
+ОБРАБОТКА КОММАНД
+
+
+ManipulatorTools::drop, click
+    собирают комманды в commandList_, затем вызывается
+    > ManipulatorTools::acceptCommands, где вызывается
+    > Manipulator::appendCommand(...) где команды
+        добавляются к списку undoList_ (если joinToLast то к поседней команде)
+    затем изменяется текущий инструмент, если нужно
+
+ManipulatorTool::rollback
+    вызывает отмену списка команд, содержащихся в инструменте,
+    а потом уже обращается к виртуальной функции, которая
+    предлагает следующий инструмент
+
+Manipulator::cancel
+    отменяет и очишает список undoList1stStage
+    вызывает ManipulatorTool::rollback()
+    заменяет текущий инструмент (если надо)
+
+
+--------------------------------------------------------
+Label
+    является частью чертежа, взаимодействует с мышкой,
+    но не соединяется с Object по их законам
+
+TextLabel : Label
+    надписи на чертеже. могут иметь вспомогательные линии,
+    указывающие на к.-л. PObject
+
+CanvasRectangleLabel : Label
+    показывает область, которая будет выводиться на печать
+--------------------------------------------------------
+Object
+    является частью чертежа, соедииняется с другими объектами хитрым образом
+
+Line : Object
+    прямая линия. заканчивается либо элементом либо джойнером
+Element : Object
+    нечто, которое может соединяться с самим собой или линией может
+    иметь несколько точек для соединения. Может оставаться неприсоединенным
+Joiner : Object
+    соединитель, который соединяется только с линиями. Не может существовать
+    неприсоединенным. Если теряются отдельные соединения, то должен изменяться
+    тип соединения
+TeeJoiner - 3 соединения
+BendJoiner - 2 соединения под углом
+WeldJoiner - 2 соединения на прямой
+EndCupJoiner - 1 соединение, окончание линии
+
+--------------------------------------------------------
+Adorner
+    базовый класс для таких сущностей, которые отображаются на чертеже
+    но не являются частью чертежа, т.е. не выводятся на печать. Чаще всего
+    они появляются в связи с работой какого либо инструмента
+
+GhostAdorner
+    имитируем призрачной окраской положение старой линии
+    при перемещениии контура
+
+MoveAdorner
+    показывает линию, обозначающую направление перемещения
+
+NodePointAdorner
+    показыает характерные точки, под курсором: концы линий,
+    середину линий и проч.
+
+StraightLineAdorner
+    рисует "прицел", который под курсором показывает
+    основные оси плоскости
+
+
