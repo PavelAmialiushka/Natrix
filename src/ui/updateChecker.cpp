@@ -73,16 +73,17 @@ void UpdateChecker::showLastVersionDialog()
 void UpdateChecker::checkUpdate()
 {
     QString url = QCoreApplication::instance()->organizationDomain();
-    url         = QString("http://%1/download/version.nfo").arg(url);
+    url         = QString("https://%1/download/version.nfo").arg(url);
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    connect(manager,
+            &QNetworkAccessManager::sslErrors,
+            [=](QNetworkReply *reply, const QList<QSslError> &) { reply->ignoreSslErrors(); });
     connect(manager, &QNetworkAccessManager::finished, [=](QNetworkReply *response) {
         response->deleteLater();
-        //        int statusCode =
-        //        response->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(); qDebug() <<
-        //        statusCode;
-
-        if(response->error() != QNetworkReply::NoError)
+        int  statusCode = response->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        auto er         = response->error();
+        if(er != QNetworkReply::NoError)
         {
             if(forced)
                 showErrorDialog();

@@ -33,7 +33,7 @@ def print_subtitle(s):
 
 
 def call_vcvars(cfg):
-    if "VCINSTALLDIR" in os.environ or cfg.novcvars:
+    if "VCINSTALLDIR" in os.environ or cfg.no_vcvars:
         return
 
     # get path of vs
@@ -45,7 +45,7 @@ def call_vcvars(cfg):
     # call vcvars
     vcvars = fr"{vspath}\VC\Auxiliary\Build\vcvars64.bat"
     cmd = f'call "{vcvars}" && python '
-    cmd += " ".join(sys.argv) + " --novcvars"
+    cmd += " ".join(sys.argv) + " --no-vcvars"
     rc = subprocess.call(cmd, shell=True)
     sys.exit(rc)
 
@@ -70,14 +70,18 @@ def build_natrix(cfg):
 
     # generate
     print_subtitle("cmake generate")
-    use_ninja = subprocess.call("where ninja", stdout=subprocess.DEVNULL) == 0
+    use_ninja = cfg.use_ninja
     if use_ninja:
-        print("Found ninja")
+        if subprocess.call("where ninja", stdout=subprocess.DEVNULL) == 0:
+            print("Found ninja")
+        else:
+            use_ninja = False
 
-    cmd = (f"cmake "
-           f"-S .  "
-           f"-B {cfg.build_path} " 
-           f"-DCMAKE_BUILD_TYPE={cfg.build_type} "
+    cmd = (
+        f"cmake "
+        f"-S .  "
+        f"-B {cfg.build_path} "
+        f"-DCMAKE_BUILD_TYPE={cfg.build_type} "
     )
     if cfg.platform == "mingw":
         cmd += f'-G "MinGW Makefiles" '
@@ -159,6 +163,14 @@ def make_installer(cfg):
     print(f"Output: {cfg.setup_file}")
     print(f"Size  : {setup_file_size}")
 
+    setup_file_name = cfg.setup_file.split("\\")[-1]
+    nfo_file = "result\\version.nfo"
+    with open(nfo_file, "w+") as nfo:
+        nfo.write(f"{setup_file_name}\n")
+    rewrite_file = "result\\htaccess.txt"
+    with open(rewrite_file, "w+") as hta:
+        hta.write(rf"RewriteRule ^/download/Natrix_Setup(.*).exe$ https://natrixla.ru/{setup_file_name} [L,R=301]")
+
 
 def install():
     subprocess.call(f"{cfg.setup_file} ", shell=True)
@@ -175,7 +187,7 @@ def create_parser():
         default=__platforms[0],
         help="Select build platform",
     )
-    
+
     __build_types = ["Release", "Debug"]
     parser.add_argument(
         "-t",
@@ -221,19 +233,28 @@ def create_parser():
     )
 
     parser.add_argument(
-        "--novcvars",
-        dest="novcvars",
+        "--no-ninja",
+        dest="use_ninja",
+        action="store_false",
+        default=True,
+        help="Do not use ninja",
+    )
+
+    parser.add_argument(
+        "--no-vcvars",
+        dest="no_vcvars",
         action="store_true",
     )
 
     ini = "".join(open("build.ini").readlines()).split()
     n = parser.parse_args(args=ini)
-    return parser.parse_args(namespace = n)
+    return parser.parse_args(namespace=n)
+
 
 if __name__ == "__main__":
     try:
         cfg = create_parser()
-        
+
         if cfg.platform == "msvs":
             call_vcvars(cfg)
 

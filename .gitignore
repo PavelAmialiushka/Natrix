@@ -19,6 +19,7 @@ src/ui/ui_mainwindow.h
 
 .git
 .hg
+result/
 regression/
 build*/
 bin/
