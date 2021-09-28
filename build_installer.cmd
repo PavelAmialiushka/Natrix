@@ -1,1 +1,1 @@
-build.py --tool=msvc --run-tests --make-installer %*
+build.py --tool=msvs --run-tests --make-installer %*

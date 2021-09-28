@@ -17,7 +17,6 @@
 #include "cryptopp/zlib.h"
 
 #include <Qt>
-#include <QtXml/QtXml>
 
 namespace
 {

@@ -246,9 +246,7 @@ def create_parser():
         action="store_true",
     )
 
-    ini = "".join(open("build.ini").readlines()).split()
-    n = parser.parse_args(args=ini)
-    return parser.parse_args(namespace=n)
+    return parser.parse_args()
 
 
 if __name__ == "__main__":

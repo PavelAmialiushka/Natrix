@@ -1,1 +1,1 @@
-build.py -t Debug --tool=msvc --run-tests --no-ninja %*
+build.py -t Debug --tool=msvs --run-tests --no-ninja %*
