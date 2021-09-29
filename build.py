@@ -164,12 +164,11 @@ def make_installer(cfg):
     print(f"Size  : {setup_file_size}")
 
     setup_file_name = cfg.setup_file.split("\\")[-1]
-    nfo_file = "result\\version.nfo"
-    with open(nfo_file, "w+") as nfo:
-        nfo.write(f"{setup_file_name}\n")
     rewrite_file = "result\\htaccess.txt"
     with open(rewrite_file, "w+") as hta:
-        hta.write(rf"RewriteRule ^/download/Natrix_Setup(.*).exe$ https://natrixla.ru/{setup_file_name} [L,R=301]")
+        hta.write(
+            rf"RewriteRule ^download/Natrix(.*)exe$ https://natrixla.ru/{setup_file_name} [L,R=301]"
+        )
 
 
 def install():

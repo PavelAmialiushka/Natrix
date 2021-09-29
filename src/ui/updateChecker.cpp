@@ -73,7 +73,7 @@ void UpdateChecker::showLastVersionDialog()
 void UpdateChecker::checkUpdate()
 {
     QString url = QCoreApplication::instance()->organizationDomain();
-    url         = QString("https://%1/download/version.nfo").arg(url);
+    url         = QString("https://%1/download/Natrix_Setup_2_1_01_stable_01_01_2010.exe").arg(url);
 
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     connect(manager,
@@ -83,39 +83,35 @@ void UpdateChecker::checkUpdate()
         response->deleteLater();
         int  statusCode = response->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         auto er         = response->error();
-        if(er != QNetworkReply::NoError)
-        {
+        auto er_str     = response->errorString();
+
+        auto _show_error = [&]() {
             if(forced)
                 showErrorDialog();
+            QSettings().setValue("checkUpdateDate", QDate(2000, 1, 1));
 
             this->deleteLater();
-            return;
-        }
+        };
+
+        if(er != QNetworkReply::NoError)
+            return _show_error();
 
         QVariant redirectionTarget =
             response->attribute(QNetworkRequest::RedirectionTargetAttribute);
-        if(!redirectionTarget.isNull())
-        {
-            QUrl newUrl = QUrl(redirectionTarget.toUrl());
-            manager->get(QNetworkRequest(newUrl));
-            return;
-        }
+        if(redirectionTarget.isNull())
+            return _show_error();
 
-        QByteArray data    = response->readAll();
+        QUrl       newUrl  = QUrl(redirectionTarget.toUrl());
+        QByteArray data    = newUrl.toEncoded();
         QString    content = data;
 
         int index = content.indexOf("Natrix_Setup_");
-        if(index >= 0)
-        {
-            content = content.mid(index, 100);
-            content = content.section("_", 2, 4);
-            checkUpdate(content.replace("_", "."));
-        }
-        else
-        {
-            if(forced)
-                showErrorDialog();
-        }
+        if(index < 0)
+            return _show_error();
+
+        content = content.mid(index, 100);
+        content = content.section("_", 2, 4);
+        checkUpdate(content.replace("_", "."));
 
         this->deleteLater();
     });
