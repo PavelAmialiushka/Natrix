@@ -19,6 +19,8 @@ set(CMAKE_CXX_FLAGS
 set(CMAKE_CXX_FLAGS
     "${CMAKE_CXX_FLAGS} -D_USE_MATH_DEFINES")
 
+SET(CMAKE_EXE_LINKER_FLAGS  
+    "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
 
 # Qt5 library
 find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui PrintSupport Xml Network)

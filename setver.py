@@ -8,7 +8,7 @@ import os, sys, datetime
 #
 
 # select version number
-version = '2.9.64'
+version = '2.9.65'
 version = version.split('.')
 
 # select release stage
