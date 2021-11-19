@@ -83,6 +83,9 @@ void UpdateChecker::checkUpdate()
         response->deleteLater();
         int  statusCode = response->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
         auto er         = response->error();
+        auto er_str     = response->errorString();
+        QByteArray d    = response->readAll();
+
         if(er != QNetworkReply::NoError)
         {
             if(forced)

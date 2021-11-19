@@ -2,14 +2,14 @@
 #define VERSION_H
 
 //#define VER_FILEVERSION             {VERSION,},0
-#define VER_FILEVERSION 2, 9, 64, 0
+#define VER_FILEVERSION             2,9,65,0
 //#define VER_FILEVERSION_STR         "{VERSION.}.0\0"
-#define VER_FILEVERSION_STR "2.9.64.0\0"
+#define VER_FILEVERSION_STR         "2.9.65.0\0"
 
 //#define VER_PRODUCTVERSION          {VERSION,},0
-#define VER_PRODUCTVERSION 2, 9, 64, 0
+#define VER_PRODUCTVERSION          2,9,65,0
 //#define VER_PRODUCTVERSION_STR      "{VERSION.}\0"
-#define VER_PRODUCTVERSION_STR "2.9.64\0"
+#define VER_PRODUCTVERSION_STR      "2.9.65\0"
 
 #define VER_COMPANYNAME_STR "NatrixLabs"
 #define VER_FILEDESCRIPTION_STR "Natrix"

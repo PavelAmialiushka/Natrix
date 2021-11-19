@@ -82,7 +82,7 @@
 ;--------------------------------
 ;Installer Sections
 
-Section "All the files" SecDummy
+Section "Natrix files" SecDummy
 
   SetOutPath "$INSTDIR"
   
@@ -150,6 +150,13 @@ Section "All the files" SecDummy
   
   !insertmacro MUI_STARTMENU_WRITE_END
 
+SectionEnd
+
+Section "Visual Studio Runtime"
+  SetOutPath "$INSTDIR"
+  File /r "${BIN}\vc_redist.x64.exe"  
+  ExecWait '"$INSTDIR\vc_redist.x64.exe" /install /quiet'
+  Delete "$INSTDIR\vc_redist.x64.exe"
 SectionEnd
 
 ;--------------------------------

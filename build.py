@@ -137,7 +137,8 @@ def make_installer(cfg):
     natrix_path = f"{deploy_path}/natrix.exe"
     shutil.copy(f"{cfg.build_path}/bin/ui.exe", natrix_path)
     subprocess.check_output(
-        f"windeployqt.exe {natrix_path} " "--no-compiler-runtime " "--no-opengl-sw"
+        f"windeployqt.exe {natrix_path} " 
+        f"--no-opengl-sw"
     )
 
     # check version
@@ -169,7 +170,7 @@ def make_installer(cfg):
         nfo.write(f"{setup_file_name}\n")
     rewrite_file = "result\\htaccess.txt"
     with open(rewrite_file, "w+") as hta:
-        hta.write(rf"RewriteRule ^/download/Natrix_Setup(.*).exe$ https://natrixla.ru/{setup_file_name} [L,R=301]")
+        hta.write(rf"RewriteRule ^download/Natrix_Setup(.*)\.exe$ https://natrixlabs.ru/download/{setup_file_name} [L,R=302]")
 
 
 def install():
