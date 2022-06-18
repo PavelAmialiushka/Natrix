@@ -38,12 +38,12 @@ def call_vcvars(cfg):
 
     # get path of vs
     programfiles = os.getenv("ProgramFiles(x86)")
-    vswhere = fr"{programfiles}\Microsoft Visual Studio\Installer\vswhere.exe"
+    vswhere = rf"{programfiles}\Microsoft Visual Studio\Installer\vswhere.exe"
     cmd = f'"{vswhere}" -prerelease -latest -property installationPath'
     vspath = subprocess.check_output(cmd).decode().strip()
 
     # call vcvars
-    vcvars = fr"{vspath}\VC\Auxiliary\Build\vcvars64.bat"
+    vcvars = rf"{vspath}\VC\Auxiliary\Build\vcvars64.bat"
     cmd = f'call "{vcvars}" && python '
     cmd += " ".join(sys.argv) + " --no-vcvars"
     rc = subprocess.call(cmd, shell=True)
@@ -136,15 +136,15 @@ def make_installer(cfg):
     # create deply package
     natrix_path = f"{deploy_path}/natrix.exe"
     shutil.copy(f"{cfg.build_path}/bin/ui.exe", natrix_path)
-    subprocess.check_output(
-        f"windeployqt.exe {natrix_path} " 
-        f"--no-opengl-sw"
-    )
+    subprocess.check_output(f"windeployqt.exe {natrix_path} --no-opengl-sw")
 
     # check version
     import setver
 
+    debug = cfg.build_type == "Debug"
     version = setver.install_version()
+    if debug:
+        version = f"{version}_debug"
 
     # create installer
     programfiles = os.getenv("ProgramFiles(x86)")
@@ -164,13 +164,17 @@ def make_installer(cfg):
     print(f"Output: {cfg.setup_file}")
     print(f"Size  : {setup_file_size}")
 
-    setup_file_name = cfg.setup_file.split("\\")[-1]
-    nfo_file = "result\\version.nfo"
-    with open(nfo_file, "w+") as nfo:
-        nfo.write(f"{setup_file_name}\n")
-    rewrite_file = "result\\htaccess.txt"
-    with open(rewrite_file, "w+") as hta:
-        hta.write(rf"RewriteRule ^download/Natrix_Setup(.*)\.exe$ https://natrixlabs.ru/download/{setup_file_name} [L,R=302]")
+    if not debug:
+        setup_file_name = cfg.setup_file.split("\\")[-1]
+        nfo_file = "result\\version.nfo"
+        with open(nfo_file, "w+") as nfo:
+            nfo.write(f"{setup_file_name}\n")
+
+        rewrite_file = "result\\htaccess.txt"
+        with open(rewrite_file, "w+") as hta:
+            hta.write(
+                rf"RewriteRule ^download/Natrix_Setup(.*)\.exe$ https://natrixlabs.ru/download/{setup_file_name} [L,R=302]"
+            )
 
 
 def install():
@@ -257,7 +261,6 @@ if __name__ == "__main__":
         if cfg.platform == "msvs":
             call_vcvars(cfg)
 
-        cfg.do_make_installer = True
         cfg.do_run_tests = True
 
         from datetime import datetime
